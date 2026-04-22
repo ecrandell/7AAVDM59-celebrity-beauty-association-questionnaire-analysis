@@ -1,0 +1,51 @@
+---
+title: "Test"
+author: "nicky8933"
+date: "2026-04-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(readr)
+library(ggplot2)
+
+options(scipen = 999)
+
+data <- read_csv('../Nicky/Responses.csv')
+```
+
+# Hypothesis 1.
+Is there an association between celebrity association with a beauty product and consumers’ purchase intention?
+
+```{r}
+data <- data %>%
+  rename(
+    Q8  = `8. I am more interested in a beauty product if it is associated with a celebrity.`,
+    Q10 = `10. Celebrity involvement makes a product more appealing.`,
+    Q13 = `13. I am likely to purchase a beauty product endorsed by a celebrity.`)
+```
+
+```{r}
+data <- data %>%
+  mutate(
+    celebrity_association = rowMeans(select(.,Q8,Q10), na.rm = TRUE), purchase_intention = rowMeans(select(.,Q13), na.rm = TRUE)
+  )
+```
+
+```{r}
+library(ggplot2)
+ggplot(data, aes(x = celebrity_association, y = purchase_intention)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Celebrity Association and Purchase Intention",
+    x = "Celebrity Association",
+    y = "Purchase Intention"
+  )+
+  theme_minimal()
+```

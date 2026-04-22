@@ -16,7 +16,7 @@ library(ggplot2)
 
 options(scipen = 999)
 
-data <- read_csv('../Nicky/Responses.csv')
+data <- read_csv('../data/celebrity-association-questionnaire-responses-4.26.csv')
 ```
 
 # Hypothesis 1.
@@ -25,9 +25,9 @@ Is there an association between celebrity association with a beauty product and 
 ```{r}
 data <- data %>%
   rename(
-    Q8  = `8. I am more interested in a beauty product if it is associated with a celebrity.`,
-    Q10 = `10. Celebrity involvement makes a product more appealing.`,
-    Q13 = `13. I am likely to purchase a beauty product endorsed by a celebrity.`)
+    Q8  = '8. I am more interested in a beauty product if it is associated with a celebrity.',
+    Q10 = '10. Celebrity involvement makes a product more appealing.',
+    Q13 = '13. I am likely to purchase a beauty product endorsed by a celebrity.')
 ```
 
 ```{r}
@@ -43,9 +43,58 @@ ggplot(data, aes(x = celebrity_association, y = purchase_intention)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   labs(
-    title = "Celebrity Association and Purchase Intention",
-    x = "Celebrity Association",
-    y = "Purchase Intention"
+    title = "Perceived Celebrity Association and Purchase Intention",
+    x = "Perceived Celebrity Association (Low to High)",
+    y = "Purchase Intention (Low to High)"
   )+
   theme_minimal()
 ```
+```{r}
+cor.test(data$celebrity_association,
+         data$purchase_intention,
+         method = "spearman",
+         exact = FALSE)
+
+```
+
+#Finding1
+A Spearman rank correlation indicated that perceived celebrity association is positively associated with purchase intention, rs(148) = .69, p < .001.
+
+##ERIN TESTING##
+
+#Analysis 2: Chi-square test with Questions 8 and 13, correlation between perceived celebrity association with a beauty product and purchase intention.
+
+```{r}
+library(dplyr)
+
+data <- data %>%
+  mutate(
+    Q8_cat = case_when(
+      Q8 %in% c(1, 2) ~ "Disagree",
+      Q8 == 3         ~ "Neutral",
+      Q8 %in% c(4, 5) ~ "Agree"
+    ),
+    Q13_cat = case_when(
+      Q13 %in% c(1, 2) ~ "Disagree",
+      Q13 == 3         ~ "Neutral",
+      Q13 %in% c(4, 5) ~ "Agree"
+    )
+  )
+
+likert_levels <- c("Disagree", "Neutral", "Agree")
+
+data <- data %>%
+  mutate(
+    Q8_cat = factor(Q8_cat, levels = likert_levels),
+    Q13_cat = factor(Q13_cat, levels = likert_levels)
+  )
+
+table(data$Q8, 
+      data$Q8_cat, 
+      useNA = NULL)
+
+chisq.test(data$Q8_cat, 
+           data$Q13_cat)
+```
+#Finding: Perceived celebrity association is associated with purchase intention, X2(df = 4, n = 148) = 70.719 with a p-value of < 0.001.
+##Note: Almost half of respondants were "Neutral"

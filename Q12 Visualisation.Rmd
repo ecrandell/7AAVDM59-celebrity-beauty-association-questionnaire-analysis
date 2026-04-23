@@ -1,0 +1,58 @@
+---
+title: "Q12 Visualisation"
+author: "nicky8933"
+date: "2026-04-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+
+# 1. 데이터 불러오기
+data <- read_excel('./Responses Generate.xlsx')
+
+# 2. 
+data <- data %>%
+  rename(
+    Q12 = `12. Of the following factors, which factor would you say influences your purchase decision the most?`)
+
+
+data_q12 <- data %>%
+  select(Q12) %>%
+  filter(!is.na(Q12)) %>%
+  mutate(
+    Q12 = factor(Q12,
+      levels = c(
+        "Trustworthiness",
+        "Expertise",
+        "Authenticity",
+        "Physical attractiveness",
+        "Celebrity status"
+      )
+    )
+  )
+```
+
+
+```{r}
+# 4. 빈도 계산
+data_count <- data_q12 %>%
+  count(Q12)
+
+# 5. 그래프 (가로 bar chart 추천)
+ggplot(data_count, aes(x = reorder(Q12, n), y = n)) +
+  geom_col(fill = "skyblue") +
+  labs(
+    title = "Most Influential Factor in Purchase Decision",
+    x = "Factor",
+    y = "Count"
+  ) +
+  coord_flip() +
+  theme_minimal()
+```

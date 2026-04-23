@@ -56,3 +56,20 @@ ggplot(data_count, aes(x = reorder(Q12, n), y = n)) +
   coord_flip() +
   theme_minimal()
 ```
+
+```{r}
+# 4. Make frequency table
+Q12_table <- data_q12 %>%
+count(Q12) %>%
+mutate(
+Percent = round(n / sum(n) * 100, 1)
+) %>%
+rename(
+Factor = Q12,
+Count = n
+)
+
+# 5. View table
+Q12_table
+
+```

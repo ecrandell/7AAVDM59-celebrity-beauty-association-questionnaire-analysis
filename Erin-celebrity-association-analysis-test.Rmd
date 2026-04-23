@@ -16,9 +16,11 @@ options(scipen = 999)
 d_celebrityassociation <- read_csv('../data/celebrity-association-questionnaire-responses-4.26.csv')
 
 knitr::opts_chunk$set(echo = TRUE)
+
+
 ```
 
 #H1 Celebrity association is associated with purchase intention
 
-
+Can you see my new edition
 ```

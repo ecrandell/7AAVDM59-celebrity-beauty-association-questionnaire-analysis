@@ -98,3 +98,31 @@ chisq.test(data$Q8_cat,
 ```
 #Finding: Perceived celebrity association is associated with purchase intention, X2(df = 4, n = 148) = 70.719 with a p-value of < 0.001.
 ##Note: Almost half of respondants were "Neutral"
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+names(data)
+
+table_data <- data %>%
+  select(Q8, Q10, Q13) %>%
+  pivot_longer(cols = everything(),
+    names_to  = "Question",
+    values_to = "Response") %>%
+  mutate(Response = factor(Response,
+      levels = 1:5,
+      labels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"))) %>%
+  group_by(Question, Response) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from  = Response, values_from = n) %>%
+    arrange(match(Question, c("Q8", "Q10", "Q13")))
+
+totals_row <- table_data %>%
+  summarise(across(where(is.numeric), sum)) %>%
+  mutate(Question = "Total")
+
+bind_rows(table_data, totals_row) %>%
+  kable(caption = "Answers: Perceived Celebrity Association and Purchase Intention")
+```

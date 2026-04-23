@@ -7,24 +7,141 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+# Strating
+```{r}
+library(dplyr)
+library(tidyr)
+library(knitr)
+data <- read_excel('./Responses.xlsx')
 ```
 
-## Including Plots
+# Hypothesis 1. (RQ 1)
+Is there an association between celebrity association with a beauty product and consumers’ purchase intention?
 
-You can also embed plots, for example:
+# Renaming Data
+```{r}
+data <- data %>%
+  rename(
+    Q8  = `8. I am more interested in a beauty product if it is associated with a celebrity.`,
+    Q10 = `10. Celebrity involvement makes a product more appealing.`,
+    Q13 = `13. I am likely to purchase a beauty product endorsed by a celebrity.`)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
+# Variable Construction
+```{r}
+data <- data %>%
+  mutate(
+    celebrity_association = rowMeans(select(.,Q8,Q10), na.rm = TRUE), purchase_intention = rowMeans(select(.,Q13), na.rm = TRUE)
+
+```
+
+# Table Visualistion for RQ1.
+```{r}
+table_data <- data %>%
+  select(Q8, Q10, Q13) %>%
+  pivot_longer(cols = everything(),
+    names_to  = "Question",
+    values_to = "Response") %>%
+  mutate(Response = factor(Response,
+      levels = 1:5,
+      labels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"))) %>%
+  group_by(Question, Response) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from  = Response, values_from = n) %>%
+    arrange(match(Question, c("Q8", "Q10", "Q13")))
+
+totals_row <- table_data %>%
+  summarise(across(where(is.numeric), sum)) %>%
+  mutate(Question = "Total")
+
+bind_rows(table_data, totals_row) %>%
+  kable(caption = "Answers: Perceived Celebrity Association and Purchase Intention")
+```
+
+# Multicollinearity Visualisation for RQ1.
+```{r}
+library(ggplot2)
+ggplot(data, aes(x = celebrity_association, y = purchase_intention)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Celebrity Association and Purchase Intention",
+    x = "Celebrity Association",
+    y = "Purchase Intention"
+  )+
+  theme_minimal()
+```
+# RQ 1. Spearman test
+```{r}
+cor.test(data$celebrity_association,
+         data$purchase_intention,
+         method = "spearman")
+
+options(scipen = 999)
+```
+#Findings for RQ 1.
+We found that celebrity association with beauty products is positively associated with consumers' purchase intention, ρ = 0.69, p < 0.001.
+
+#Hypothesis 2. (RQ 2) 
+What perceived factors are most influential in consumer behavior? 
+
+# Bar Chart Visualisation for RQ 2.
+```{r}
+data <- data %>%
+  rename(
+    Q12 = `12. Of the following factors, which factor would you say influences your purchase decision the most?`)
+
+data_q12 <- data %>%
+  select(Q12) %>%
+  filter(!is.na(Q12)) %>%
+  mutate(
+    Q12 = factor(Q12,
+      levels = c(
+        "Trustworthiness",
+        "Expertise",
+        "Authenticity",
+        "Physical attractiveness",
+        "Celebrity status"
+      )
+    )
+  )
+
+data_count <- data_q12 %>%
+  count(Q12)
+
+ggplot(data_count, aes(x = reorder(Q12, n), y = n)) +
+  geom_col(fill = "skyblue") +
+  labs(
+    title = "Most Influential Factor in Purchase Decision",
+    x = "Factor",
+    y = "Count"
+  ) +
+  coord_flip() +
+  theme_minimal()
+```
+
+# Table Visualisation for RQ 2. 
+```{r}
+# 4. Make frequency table
+Q12_table <- data_q12 %>%
+count(Q12) %>%
+mutate(
+Percent = round(n / sum(n) * 100, 1)
+) %>%
+rename(
+Factor = Q12,
+Count = n
+)
+
+# 5. View table
+Q12_table
+```
+
+# Findings for RQ 2.
+We found that consumers percieved trustworthiness is the most influential factor, followed by expertise, while authenticity, physical attractiveness and celebrity status exert much weaker impacts on consumers’ purchase behaviours.
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

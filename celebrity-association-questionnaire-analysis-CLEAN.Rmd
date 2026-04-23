@@ -141,7 +141,7 @@ Q12_table
 ```
 
 # Findings for RQ 2.
-We found that consumers percieved trustworthiness is the most influential factor, followed by expertise, while authenticity, physical attractiveness and celebrity status exert much weaker impacts on consumers’ purchase behaviours.
+We found that consumers perceived trustworthiness is the most influential factor, followed by expertise, while authenticity, physical attractiveness and celebrity status exert much weaker impacts on consumers’ purchase behaviours.
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

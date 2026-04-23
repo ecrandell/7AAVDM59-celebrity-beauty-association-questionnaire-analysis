@@ -35,7 +35,7 @@ data <- data %>%
 data <- data %>%
   mutate(
     celebrity_association = rowMeans(select(.,Q8,Q10), na.rm = TRUE), purchase_intention = rowMeans(select(.,Q13), na.rm = TRUE)
-
+)
 ```
 
 # Table Visualistion for RQ1.

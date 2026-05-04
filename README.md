@@ -11,6 +11,6 @@ Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Softwar
 
 Wickham, H., François, R., Henry, L., Müller, K., Vaughan, D. (2026a). dplyr: A Grammar of Data Manipulation. R package version 1.2.1, https://dplyr.tidyverse.org
 
-Wickham, H., Hester, J., Bryan, J. (2026b). readr: Read Rectangular Text Data. R package version 2.2.0, https://readr.tidyverse.org
+Wickham, H. & Bryan, J. (2024). readxl: Read excel files. Version 1.4.5, https://CRAN.R-project.org/package=readxl
 
 Xie, Y., (2025). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.51, https://yihui.org/knitr/
